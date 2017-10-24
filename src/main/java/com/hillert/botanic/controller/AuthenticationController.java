@@ -15,13 +15,14 @@
  */
 package com.hillert.botanic.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hillert.botanic.controller.dto.AuthenticationRequest;
-import com.hillert.botanic.controller.dto.AuthenticationToken;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +37,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hillert.botanic.controller.dto.AuthenticationRequest;
+import com.hillert.botanic.controller.dto.AuthenticationToken;
+
 /**
  * This controller generates the {@link AuthenticationToken} that must be present
  * in subsequent REST invocations.
@@ -46,7 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class AuthenticationController {
-
+	public static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationController.class);
 	private final AuthenticationManager authenticationManager;
 	private final UserDetailsService userDetailsService;
 
@@ -75,6 +79,7 @@ public class AuthenticationController {
 		session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
 
 		UserDetails details = this.userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		
 
 		final Map<String, Boolean> roles = new HashMap<String, Boolean>();
 

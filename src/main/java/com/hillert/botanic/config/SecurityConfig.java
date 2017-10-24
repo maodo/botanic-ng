@@ -15,9 +15,11 @@
  */
 package com.hillert.botanic.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,8 +28,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.hillert.botanic.dao.UsersRepository;
 import com.hillert.botanic.service.DefaultUserDetailsService;
 
 /**
@@ -38,9 +40,13 @@ import com.hillert.botanic.service.DefaultUserDetailsService;
  */
 @EnableWebMvcSecurity
 @EnableWebSecurity(debug = false)
+@EnableJpaRepositories(basePackageClasses = UsersRepository.class)
 @Configuration
 @Order
 class SecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	 @Autowired
+	    private DefaultUserDetailsService userDetailsService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -55,14 +61,30 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
-		authManagerBuilder.userDetailsService(new DefaultUserDetailsService());
+		authManagerBuilder.userDetailsService(userDetailsService);
+//		authManagerBuilder.userDetailsService(new DefaultUserDetailsService());
+//		authManagerBuilder.userDetailsService(new DefaultUserDetailsService()).passwordEncoder(getPasswordEncoder());
 	}
 
-	@Bean
-	@Override
-	public UserDetailsService userDetailsServiceBean() throws Exception {
-		return super.userDetailsServiceBean();
-	}
+	
+//    private PasswordEncoder getPasswordEncoder() {
+//        return new PasswordEncoder() {
+//            @Override
+//            public String encode(CharSequence charSequence) {
+//                return charSequence.toString();
+//            }
+//
+//            @Override
+//            public boolean matches(CharSequence charSequence, String s) {
+//                return true;
+//            }
+//        };
+//    }
+//	@Bean
+//	@Override
+//	public UserDetailsService userDetailsServiceBean() throws Exception {
+//		return super.userDetailsServiceBean();
+//	}
 
 	@Bean
 	@Override
